@@ -19,6 +19,7 @@ import org.apache.tools.ant.util.DOMElementWriter;
 import org.apache.tools.ant.util.DateUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 
 import com.sforce.soap.metadata.CodeCoverageResult;
 import com.sforce.soap.metadata.CodeCoverageWarning;
@@ -46,7 +47,6 @@ public class XmlReport {
     private static final String ATTR_TESTS = "tests";
     private static final String ATTR_TYPE = "type";
     private static final String ATTR_MESSAGE = "message";
-    private static final String ATTR_STACKTRACE = "stacktrace";
     private static final String PROPERTIES = "properties";
     private static final String ATTR_CLASSNAME = "classname";
     private static final String TIMESTAMP = "timestamp";
@@ -186,7 +186,10 @@ public class XmlReport {
             Element nested = rootElement.getOwnerDocument().createElement(FAILURE);
             nested.setAttribute(ATTR_TYPE, type);
             nested.setAttribute(ATTR_MESSAGE, message);
-            nested.setAttribute(ATTR_STACKTRACE, stacktrace);
+            if (stacktrace != null) {
+                Text trace = rootElement.getOwnerDocument().createTextNode(stacktrace);
+                nested.appendChild(trace);
+            }
             currentTest.appendChild(nested);
         }
         rootElement.appendChild(currentTest);
