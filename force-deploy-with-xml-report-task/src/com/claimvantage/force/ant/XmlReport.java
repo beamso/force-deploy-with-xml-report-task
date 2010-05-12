@@ -144,9 +144,9 @@ public class XmlReport {
          StringBuilder sb = new StringBuilder(4096);
          CodeCoverageResult[] coverages = results.getCodeCoverage();
          for (CodeCoverageResult coverage : coverages) {
-              int covered = coverage.getNumLocations();
+              int total = coverage.getNumLocations();
               int notCovered = coverage.getNumLocationsNotCovered();
-              int total = covered + notCovered;
+              int covered = total - notCovered; 
               allCovered += covered;
               allTotal += total;
               sb.append(coverageLine(coverage.getName(), covered, total));
@@ -158,7 +158,11 @@ public class XmlReport {
          // For some classes the total is zero so skip those to avoid divide by zero
          if (total > 0) {
               int percentage = (100 * covered) / total;
-              return name + ": " + percentage + "%" + " (" + covered + "/" + total + ")" + "\n";
+              return name + ": "
+                      + percentage + "%"
+                      + " (" + covered + "/" + total + ")"
+                      + (percentage < 75 ? " below 75%" : "")
+                      + "\n";
          } else {
               return "";
          }
