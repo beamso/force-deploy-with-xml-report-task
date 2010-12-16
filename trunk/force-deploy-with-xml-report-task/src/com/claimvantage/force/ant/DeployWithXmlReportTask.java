@@ -1,6 +1,9 @@
 package com.claimvantage.force.ant;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 
@@ -18,10 +21,13 @@ import com.sforce.ws.ConnectionException;
  * Extension of the salesforce Ant task that converts the structured test result
  * data returned from a deploy into junitreport format XML so that it can be
  * consumed by tools such as Hudson's JUnit report publisher.
+ * 
+ * Also adds support for batchtest children for identifying test classes by name pattern.
  */
 public class DeployWithXmlReportTask extends DeployTask {
     
     private File junitreportdir;
+    private List<BatchTest> batchTests = new ArrayList<BatchTest>();
 
     public File getJunitreportdir() {
         return junitreportdir;
@@ -29,6 +35,27 @@ public class DeployWithXmlReportTask extends DeployTask {
 
     public void setJunitreportdir(File junitreportdir) {
         this.junitreportdir = junitreportdir;
+    }
+    
+    /**
+     * Allows child BatchTest elements to be added that can identify tests by file name pattern.
+     */
+    public BatchTest createBatchTest() {
+        BatchTest batchTest = new BatchTest(getProject());
+        batchTests.add(batchTest);
+        return batchTest;
+    }
+    
+    /**
+     * Returns any runtest items plus any batchtest items.
+     */
+    public String[] getRunTests() {
+        List<String> names = new ArrayList<String>();
+        names.addAll(Arrays.asList(super.getRunTests()));
+        for (BatchTest batchTest : batchTests) {
+            names.addAll(batchTest.getFilenames());
+        }
+        return names.toArray(new String[names.size()]);
     }
 
     /**
