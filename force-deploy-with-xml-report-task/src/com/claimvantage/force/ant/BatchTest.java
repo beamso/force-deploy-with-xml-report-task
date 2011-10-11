@@ -11,15 +11,24 @@ import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.resources.Resources;
 
 /**
- * Modelled on org.apache.tools.ant.taskdefs.optional.junit.BatchTest.
+ * Modeled on org.apache.tools.ant.taskdefs.optional.junit.BatchTest.
  */
 public class BatchTest {
     
+    private String namespace;
     private Project project;
     private Resources resources = new Resources();
 
     public BatchTest(Project project) {
         this.project = project;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     /**
@@ -43,14 +52,17 @@ public class BatchTest {
     
     @SuppressWarnings("unchecked")
     public List<String> getFilenames() {
+        
         final String extension = ".cls";
+        
+        String prefix = namespace != null && namespace.trim().length() > 0 ? namespace.trim() + "." : "";
         List<String> names = new ArrayList<String>();
         for (Iterator<Resource> iter = resources.iterator(); iter.hasNext(); ) {
             Resource r = iter.next();
             if (r.isExists()) {
                 String pathname = r.getName();
                 if (pathname.endsWith(extension)) {
-                    names.add(pathname.substring(0, pathname.length() - extension.length()));
+                    names.add(prefix + pathname.substring(0, pathname.length() - extension.length()));
                 }
             }
         }

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 
 import com.salesforce.ant.DeployTask;
 import com.sforce.soap.metadata.AsyncResult;
@@ -29,6 +30,7 @@ public class DeployWithXmlReportTask extends DeployTask {
     private File junitreportdir;
     private List<BatchTest> batchTests = new ArrayList<BatchTest>();
 
+
     public File getJunitreportdir() {
         return junitreportdir;
     }
@@ -50,11 +52,15 @@ public class DeployWithXmlReportTask extends DeployTask {
      * Returns any runtest items plus any batchtest items.
      */
     public String[] getRunTests() {
+        
         List<String> names = new ArrayList<String>();
         names.addAll(Arrays.asList(super.getRunTests()));
         for (BatchTest batchTest : batchTests) {
             names.addAll(batchTest.getFilenames());
         }
+        
+        log("running tests: " + names, Project.MSG_VERBOSE);
+        
         return names.toArray(new String[names.size()]);
     }
 
@@ -65,8 +71,13 @@ public class DeployWithXmlReportTask extends DeployTask {
             throws ConnectionException {
         
         if (junitreportdir != null) {
+            
             DeployResult result = metadataConnection.checkDeployStatus(response.getId());
             RunTestsResult rtr = result.getRunTestResult();
+            
+            log("successes: " + rtr.getSuccesses().length, Project.MSG_VERBOSE);
+            log("failures: " + rtr.getFailures().length, Project.MSG_VERBOSE);
+            
             new XmlReport(junitreportdir).report(rtr);
         }
         
