@@ -1,22 +1,22 @@
-package com.claimvantage.force.ant;
+package com.salesforce.ant;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-
-import com.salesforce.ant.DeployTask;
-import com.sforce.soap.metadata.AsyncResult;
+import com.claimvantage.force.ant.BatchTest;
+import com.claimvantage.force.ant.XmlReport;
 import com.sforce.soap.metadata.CodeCoverageWarning;
+import com.sforce.soap.metadata.DeployDetails;
 import com.sforce.soap.metadata.DeployMessage;
 import com.sforce.soap.metadata.DeployResult;
 import com.sforce.soap.metadata.MetadataConnection;
 import com.sforce.soap.metadata.RunTestFailure;
 import com.sforce.soap.metadata.RunTestsResult;
 import com.sforce.ws.ConnectionException;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Extension of the salesforce Ant task that converts the structured test result
@@ -67,13 +67,14 @@ public class DeployWithXmlReportTask extends DeployTask {
     /**
      * Necessary information already part of the response so grab it and format it.
      */
-    public void handleResponse(MetadataConnection metadataConnection, AsyncResult response)
+    public void handleResponse(MetadataConnection metadataConnection, SFDCMDAPIAntTask.StatusResult response)
             throws ConnectionException {
         
         if (junitreportdir != null) {
             
-            DeployResult result = metadataConnection.checkDeployStatus(response.getId());
-            RunTestsResult rtr = result.getRunTestResult();
+            DeployResult result = metadataConnection.checkDeployStatus(response.getId(), true);
+            DeployDetails details = result.getDetails();
+            RunTestsResult rtr = details.getRunTestResult();
             
             log("successes: " + rtr.getSuccesses().length, Project.MSG_VERBOSE);
             log("failures: " + rtr.getFailures().length, Project.MSG_VERBOSE);
@@ -91,17 +92,18 @@ public class DeployWithXmlReportTask extends DeployTask {
         }
     }
     
-    private void fixedDecompiledHandleResponse(MetadataConnection metadataConnection, AsyncResult response)
+    private void fixedDecompiledHandleResponse(MetadataConnection metadataConnection,
+                                               SFDCMDAPIAntTask.StatusResult response)
             throws ConnectionException {
         
         // Some code related to debug logging removed from here...
         
-        DeployResult result = metadataConnection.checkDeployStatus(response.getId());
+        DeployResult result = metadataConnection.checkDeployStatus(response.getId(), true);
         if (!result.isSuccess()) {
             
             StringBuilder buf = new StringBuilder("Failures:\n");
-            
-            DeployMessage messages[] = result.getMessages();
+            DeployDetails details = result.getDetails();
+            DeployMessage messages[] = details.getComponentSuccesses();
             for (DeployMessage message : messages) {
                 if (message.isSuccess()) {
                     continue;
@@ -115,7 +117,7 @@ public class DeployWithXmlReportTask extends DeployTask {
                 buf.append(message.getFileName() + ":" + message.getProblem().toString() + "\n");
             }
 
-            RunTestsResult rtr = result.getRunTestResult();
+            RunTestsResult rtr = details.getRunTestResult();
             if (rtr.getFailures() != null) {
                 RunTestFailure[] failures = rtr.getFailures();
                 for (RunTestFailure failure : failures) {
@@ -143,8 +145,6 @@ public class DeployWithXmlReportTask extends DeployTask {
                 }
             }
             throw new BuildException(buf.toString());
-        } else {
-            return;
         }
     }
 }
