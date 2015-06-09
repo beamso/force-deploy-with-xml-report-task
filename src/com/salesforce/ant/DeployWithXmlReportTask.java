@@ -114,7 +114,7 @@ public class DeployWithXmlReportTask extends DeployTask {
                 if (loc.length() == 0 && !message.getFileName().equals(message.getFullName())) {
                     loc = "(" + message.getFullName() + ")";
                 }
-                buf.append(message.getFileName() + ":" + message.getProblem().toString() + "\n");
+                buf.append(message.getFileName()).append(":").append(message.getProblem()).append("\n");
             }
 
             RunTestsResult rtr = details.getRunTestResult();
@@ -122,14 +122,10 @@ public class DeployWithXmlReportTask extends DeployTask {
                 RunTestFailure[] failures = rtr.getFailures();
                 for (RunTestFailure failure : failures) {
                     String n = (failure.getNamespace() != null ? failure.getNamespace() + "." : "") + failure.getName();
-                    buf.append("Test failure, method: "
-                            + n + "."
-                            + failure.getMethodName()
-                            + " -- "
-                            + failure.getMessage()
-                            + " stack "
-                            + failure.getStackTrace()
-                            + "\n\n");
+                    buf.append("Test failure, method: ").append(n).append(".")
+                            .append(failure.getMethodName()).append(" -- ")
+                            .append(failure.getMessage()).append(" stack ")
+                            .append(failure.getStackTrace()).append("\n\n");
                 }
 
             }
@@ -139,9 +135,9 @@ public class DeployWithXmlReportTask extends DeployTask {
                     buf.append("Code coverage issue");
                     if (ccw.getName() != null) {
                         String n = (ccw.getNamespace() != null ? ccw.getNamespace() + "." : "") + ccw.getName();
-                        buf.append(", class: " + n);
+                        buf.append(", class: ").append(n);
                     }
-                    buf.append(" -- " + ccw.getMessage() + "\n");
+                    buf.append(" -- ").append(ccw.getMessage()).append("\n");
                 }
             }
             throw new BuildException(buf.toString());

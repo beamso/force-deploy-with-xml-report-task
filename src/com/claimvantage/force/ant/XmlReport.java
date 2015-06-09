@@ -1,5 +1,20 @@
 package com.claimvantage.force.ant;
 
+import com.sforce.soap.metadata.CodeCoverageResult;
+import com.sforce.soap.metadata.CodeCoverageWarning;
+import com.sforce.soap.metadata.RunTestFailure;
+import com.sforce.soap.metadata.RunTestSuccess;
+import com.sforce.soap.metadata.RunTestsResult;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.util.DOMElementWriter;
+import org.apache.tools.ant.util.DateUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,23 +24,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Date;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.util.DOMElementWriter;
-import org.apache.tools.ant.util.DateUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
-
-import com.sforce.soap.metadata.CodeCoverageResult;
-import com.sforce.soap.metadata.CodeCoverageWarning;
-import com.sforce.soap.metadata.RunTestFailure;
-import com.sforce.soap.metadata.RunTestSuccess;
-import com.sforce.soap.metadata.RunTestsResult;
 
 
 /**
@@ -121,7 +119,7 @@ public class XmlReport {
                if (warning.getName() == null) {
                    message = warning.getMessage();
                } else {
-                   detail.append(warning.getName() + ": " + warning.getMessage() + "\n");
+                   detail.append(warning.getName()).append(": ").append(warning.getMessage()).append("\n");
                }
             }
             reportTestXml(
@@ -212,20 +210,17 @@ public class XmlReport {
     }
         
     private void write() {
-        Writer writer = null;
         try {
-            writer = new BufferedWriter(new OutputStreamWriter(createOutputStream(), "UTF8"));
-            writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
-            (new DOMElementWriter()).write(rootElement, writer, 0, "  ");
-            writer.flush();
+            Writer writer = new BufferedWriter(new OutputStreamWriter(createOutputStream(), "UTF8"));
+            try {
+                writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
+                (new DOMElementWriter()).write(rootElement, writer, 0, "  ");
+            } finally {
+                writer.flush();
+                writer.close();
+            }
         } catch (IOException exc) {
             throw new BuildException("Unable to write log file", exc);
-        } finally {
-            try {
-                writer.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 

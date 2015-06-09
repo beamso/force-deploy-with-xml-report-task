@@ -21,7 +21,7 @@ Here is an example of using the task:
     <target name="deployAndTestAndReport">
         <taskdef
             name="sfdeploy"
-            classname="com.claimvantage.force.ant.DeployWithXmlReportTask"
+            classname="com.salesforce.ant.DeployWithXmlReportTask"
             classpathref="ant.additions.classpath"
             />
         <delete dir="test-report-xml" quiet="true"/>

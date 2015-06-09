@@ -1,14 +1,13 @@
 package com.claimvantage.force.ant;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.resources.Resources;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Modeled on org.apache.tools.ant.taskdefs.optional.junit.BatchTest.
@@ -49,16 +48,13 @@ public class BatchTest {
     public void add(ResourceCollection rc) {
         resources.add(rc);
     }
-    
-    @SuppressWarnings("unchecked")
+
     public List<String> getFilenames() {
-        
         final String extension = ".cls";
         
         String prefix = namespace != null && namespace.trim().length() > 0 ? namespace.trim() + "." : "";
         List<String> names = new ArrayList<String>();
-        for (Iterator<Resource> iter = resources.iterator(); iter.hasNext(); ) {
-            Resource r = iter.next();
+        for (Resource r : resources) {
             if (r.isExists()) {
                 String pathname = r.getName();
                 if (pathname.endsWith(extension)) {
