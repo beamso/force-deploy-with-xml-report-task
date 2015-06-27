@@ -30,7 +30,7 @@ Here is an example of using the task:
             password="${sf.password}"
             serverurl="${sf.serverurl}"
             deployRoot="src"
-            runalltests="false"
+            testLevel="RunLocalTests"
             junitreportdir="test-report-xml"
             >
             <!-- Run only tests with file names that match this pattern -->
@@ -40,7 +40,8 @@ Here is an example of using the task:
                 </fileset>
             </batchtest>
         </sfdeploy>
-    </target>
+        </target>
+
 Version 1.4 has this change:
 
 * A method return value in ant-salesforce.jar has changed requiring recompilation. This version works with the Summer '13 version of ant-salesforce.jar.
@@ -58,3 +59,15 @@ Version 1.1 has these changes:
 * The code coverage numbers presented in "Standard Output" for each test now match the numbers presented in the Force.com web UI thanks to a fix contributed by Robert Scott.
 * Marker text "below 75%" is added to the code coverage output for any class that has less than 75% code coverage to make such classes stand out a bit more.
 * The stacktrace information (that includes line numbers) for errors is now being correctly formatted so that it is not lost.
+
+### Compilation
+
+The ant-salesforce.jar has to be installed into your `~/.m2` directory (or equivalent).
+
+    mvn install:install-file -Dfile=lib/ant-salesforce.jar \
+        -DgroupId=com.force.api -DartifactId=ant-salesforce \
+        -Dversion=34.0.0 -Dpackaging=jar
+
+### Running
+
+The `ant-salesforce.jar` (as well as the `force-deploy-with-xml-report-task.jar`) have to be copied to the `/lib` of your ant install.
