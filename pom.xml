@@ -17,7 +17,7 @@
         <dependency>
             <groupId>com.force.api</groupId>
             <artifactId>ant-salesforce</artifactId>
-            <version>34.0.0</version>
+            <version>35.0.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

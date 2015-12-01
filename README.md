@@ -66,7 +66,7 @@ The ant-salesforce.jar has to be installed into your `~/.m2` directory (or equiv
 
     mvn install:install-file -Dfile=lib/ant-salesforce.jar \
         -DgroupId=com.force.api -DartifactId=ant-salesforce \
-        -Dversion=34.0.0 -Dpackaging=jar
+        -Dversion=35.0.0 -Dpackaging=jar
 
 ### Running
 

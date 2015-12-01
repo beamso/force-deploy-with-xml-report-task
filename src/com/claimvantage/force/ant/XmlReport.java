@@ -226,7 +226,10 @@ public class XmlReport {
 
     private OutputStream createOutputStream() {
         if (!toDir.exists()) {
-            toDir.mkdirs();
+            boolean result = toDir.mkdirs();
+            if (!result) {
+                throw new RuntimeException("Failed to create directory '" + toDir + "'");
+            }
         }
         File file = new File(toDir, "TEST-" + SUITE_NAME + ".xml");
         try {
