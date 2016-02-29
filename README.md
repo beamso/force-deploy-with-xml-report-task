@@ -8,7 +8,7 @@ Extends the Force.com `com.salesforce.ant.DeployTask` to accept an optional `jun
 
 So this extension makes the Force.com unit test results visible in a continuous integration environment.
 
-*This code works with the Summer '13 ant-salesforce.jar but may not work with later versions as it relies on internal APIs.*
+*This code works with the Summer '13 `ant-salesforce.jar` but may not work with later versions as it relies on internal APIs.*
 
 A work-around to an `ArrayIndexOutOfBoundsException` that `com.salesforce.ant.DeployTask` sometimes generates is also included.
 
@@ -44,7 +44,7 @@ Here is an example of using the task:
 
 Version 1.4 has this change:
 
-* A method return value in ant-salesforce.jar has changed requiring recompilation. This version works with the Summer '13 version of ant-salesforce.jar.
+* A method return value in `ant-salesforce.jar` has changed requiring recompilation. This version works with the Summer '13 version of `ant-salesforce.jar`.
 
 Version 1.3 has this change:
 
@@ -62,11 +62,11 @@ Version 1.1 has these changes:
 
 ### Compilation
 
-The ant-salesforce.jar has to be installed into your `~/.m2` directory (or equivalent).
+The `ant-salesforce.jar` file has to be installed into your `~/.m2` directory (or equivalent).
 
-    mvn install:install-file -Dfile=lib/ant-salesforce.jar \
+    mvn install:install-file -Dfile=ant-salesforce.jar \
         -DgroupId=com.force.api -DartifactId=ant-salesforce \
-        -Dversion=35.0.0 -Dpackaging=jar
+        -Dversion=36.0.0 -Dpackaging=jar
 
 ### Running
 
