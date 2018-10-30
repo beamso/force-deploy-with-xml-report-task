@@ -6,6 +6,7 @@ import com.sforce.soap.metadata.CodeCoverageWarning;
 import com.sforce.soap.metadata.DeployDetails;
 import com.sforce.soap.metadata.DeployMessage;
 import com.sforce.soap.metadata.DeployResult;
+import com.sforce.soap.metadata.FlowCoverageWarning;
 import com.sforce.soap.metadata.MetadataConnection;
 import com.sforce.soap.metadata.RunTestFailure;
 import com.sforce.soap.metadata.RunTestsResult;
@@ -103,19 +104,8 @@ public class DeployWithXmlReportTask extends DeployTask {
             
             StringBuilder buf = new StringBuilder("Failures:\n");
             DeployDetails details = result.getDetails();
-            DeployMessage messages[] = details.getComponentSuccesses();
-            for (DeployMessage message : messages) {
-                if (message.isSuccess()) {
-                    continue;
-                }
-                String loc = message.getLineNumber() != 0
-                        ? "(" + message.getLineNumber() + "," + message.getColumnNumber()+ ")"
-                        : "";
-                if (loc.length() == 0 && !message.getFileName().equals(message.getFullName())) {
-                    loc = "(" + message.getFullName() + ")";
-                }
-                buf.append(message.getFileName()).append(":").append(message.getProblem()).append("\n");
-            }
+            handleDeployMessages(details.getComponentSuccesses(), buf);
+            handleDeployMessages(details.getComponentFailures(), buf);
 
             RunTestsResult rtr = details.getRunTestResult();
             if (rtr.getFailures() != null) {
@@ -127,20 +117,47 @@ public class DeployWithXmlReportTask extends DeployTask {
                             .append(failure.getMessage()).append(" stack ")
                             .append(failure.getStackTrace()).append("\n\n");
                 }
-
             }
             if (rtr.getCodeCoverageWarnings() != null) {
-                CodeCoverageWarning[] ccws = rtr.getCodeCoverageWarnings();
-                for (CodeCoverageWarning ccw : ccws) {
+                CodeCoverageWarning[] warnings = rtr.getCodeCoverageWarnings();
+                for (CodeCoverageWarning warning : warnings) {
                     buf.append("Code coverage issue");
-                    if (ccw.getName() != null) {
-                        String n = (ccw.getNamespace() != null ? ccw.getNamespace() + "." : "") + ccw.getName();
+                    if (warning.getName() != null) {
+                        String n = (warning.getNamespace() != null ? warning.getNamespace() + "." : "") +
+                                warning.getName();
                         buf.append(", class: ").append(n);
                     }
-                    buf.append(" -- ").append(ccw.getMessage()).append("\n");
+                    buf.append(" -- ").append(warning.getMessage()).append("\n");
+                }
+            }
+            if (rtr.getFlowCoverageWarnings() != null) {
+                FlowCoverageWarning[] warnings = rtr.getFlowCoverageWarnings();
+                for (FlowCoverageWarning warning : warnings) {
+                    buf.append("Flow coverage issue");
+                    if (warning.getFlowName() != null) {
+                        String n = (warning.getFlowNamespace() != null ? warning.getFlowNamespace() + "." : "") +
+                                warning.getFlowName();
+                        buf.append(", flow: ").append(n);
+                    }
+                    buf.append(" -- ").append(warning.getMessage()).append("\n");
                 }
             }
             throw new BuildException(buf.toString());
+        }
+    }
+
+    private void handleDeployMessages(DeployMessage messages[], StringBuilder buf) {
+        for (DeployMessage message : messages) {
+            if (message.isSuccess()) {
+                continue;
+            }
+            String loc = message.getLineNumber() != 0
+                    ? "(" + message.getLineNumber() + "," + message.getColumnNumber()+ ")"
+                    : "";
+            if (loc.length() == 0 && !message.getFileName().equals(message.getFullName())) {
+                loc = "(" + message.getFullName() + ")";
+            }
+            buf.append(message.getFileName()).append(":").append(message.getProblem()).append("\n");
         }
     }
 }
