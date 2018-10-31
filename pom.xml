@@ -4,7 +4,7 @@
     <groupId>com.claimvantage</groupId>
     <artifactId>force-deploy-with-xml-report-task</artifactId>
     <packaging>jar</packaging>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>1.5</version>
     <name>force-deploy-with-xml-report-task</name>
     <url>https://github.com/beamso/force-deploy-with-xml-report-task</url>
     <dependencies>
