@@ -132,6 +132,7 @@ public class DeployWithXmlReportTask extends DeployTask {
             }
             if (rtr.getFlowCoverageWarnings() != null) {
                 FlowCoverageWarning[] warnings = rtr.getFlowCoverageWarnings();
+                log("FlowCoverageWarnings: " + warnings.length, Project.MSG_VERBOSE);
                 for (FlowCoverageWarning warning : warnings) {
                     buf.append("Flow coverage issue");
                     if (warning.getFlowName() != null) {
