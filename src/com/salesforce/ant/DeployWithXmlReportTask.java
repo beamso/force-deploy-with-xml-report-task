@@ -161,7 +161,7 @@ public class DeployWithXmlReportTask extends DeployTask {
                 }
             }
             buf.append("\nThere are " + counter + " flows that have no coverage:\n");
-            buf.append("Flows without coverage:\n" + flowWarningStr);
+            buf.append(flowWarningStr);
         }
     }
 
