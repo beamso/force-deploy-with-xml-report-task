@@ -42,6 +42,12 @@ Here is an example of using the task:
         </sfdeploy>
         </target>
 
+Version 1.5 has this change:
+
+* Update `ant-salesforce.jar` to v44.0 and enable retrieval of flow coverage result and flow coverage warnings (https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/sforce_api_calls_runtests_result.htm)
+* Handles BuildException when FlowCoverage error occurs in the Ant library
+* Lists the flows that have 0 elements covered based on elements covered equalling elements not covered for the flow
+
 Version 1.4 has this change:
 
 * A method return value in `ant-salesforce.jar` has changed requiring recompilation. This version works with the Summer '13 version of `ant-salesforce.jar`.
@@ -67,6 +73,10 @@ The `ant-salesforce.jar` file has to be installed into your `~/.m2` directory (o
     mvn install:install-file -Dfile=ant-salesforce.jar \
         -DgroupId=com.force.api -DartifactId=ant-salesforce \
         -Dversion=44.0.0 -Dpackaging=jar
+
+    mvn package
+
+This will generate the `force-deploy-with-xml-report-task.jar` and place it into the `target` folder
 
 ### Running
 

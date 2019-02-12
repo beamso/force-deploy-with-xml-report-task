@@ -6,6 +6,7 @@ import com.sforce.soap.metadata.CodeCoverageWarning;
 import com.sforce.soap.metadata.DeployDetails;
 import com.sforce.soap.metadata.DeployMessage;
 import com.sforce.soap.metadata.DeployResult;
+import com.sforce.soap.metadata.FlowCoverageResult;
 import com.sforce.soap.metadata.FlowCoverageWarning;
 import com.sforce.soap.metadata.MetadataConnection;
 import com.sforce.soap.metadata.RunTestFailure;
@@ -90,6 +91,8 @@ public class DeployWithXmlReportTask extends DeployTask {
             super.handleResponse(metadataConnection, response);
         } catch (ArrayIndexOutOfBoundsException e) {
             fixedDecompiledHandleResponse(metadataConnection, response);
+        } catch (BuildException e) {
+            fixedDecompiledHandleResponse(metadataConnection, response);
         }
     }
     
@@ -101,7 +104,6 @@ public class DeployWithXmlReportTask extends DeployTask {
         
         DeployResult result = metadataConnection.checkDeployStatus(response.getId(), true);
         if (!result.isSuccess()) {
-            
             StringBuilder buf = new StringBuilder("Failures:\n");
             DeployDetails details = result.getDetails();
             handleDeployMessages(details.getComponentSuccesses(), buf);
@@ -141,8 +143,25 @@ public class DeployWithXmlReportTask extends DeployTask {
                     }
                     buf.append(" -- ").append(warning.getMessage()).append("\n");
                 }
+                getMissingFlowCoverage(rtr, buf);
             }
             throw new BuildException(buf.toString());
+        }
+    }
+
+    private void getMissingFlowCoverage(RunTestsResult rtr, StringBuilder buf) {
+        if (rtr != null && rtr.getFlowCoverage() != null) {
+            Integer counter = 0;
+            String flowWarningStr = "";
+            FlowCoverageResult[] flowCoverageResults = rtr.getFlowCoverage();
+            for (FlowCoverageResult flowCover : flowCoverageResults) {
+                if (flowCover.getNumElements() == flowCover.getNumElementsNotCovered()) {
+                    flowWarningStr += "\t - " + flowCover.getFlowName() + "\n";
+                    counter++;
+                }
+            }
+            buf.append("\nThere are " + counter + " flows that have no coverage:\n");
+            buf.append(flowWarningStr);
         }
     }
 
